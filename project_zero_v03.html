@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#101820"><title>PROJECT ZERO — FPS Prototype</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#101820;color:#fff;font-family:system-ui,-apple-system,sans-serif;touch-action:none}#game{position:fixed;inset:0}canvas{display:block;width:100%;height:100%}#hud{position:fixed;inset:0;pointer-events:none;display:none}.top{position:absolute;top:env(safe-area-inset-top,10px);left:12px;right:12px;display:flex;justify-content:space-between;align-items:flex-start;gap:8px}.panel{background:#071019c9;border:1px solid #9db4c044;border-radius:10px;padding:8px 11px;backdrop-filter:blur(8px);font-size:12px;letter-spacing:.04em}.brand{font-weight:900;letter-spacing:.16em;font-size:13px}.sub{color:#a9bac6;font-size:10px;margin-top:2px}.stats{display:flex;gap:7px}.stat b{display:block;font-size:16px}.stat span{color:#9fb0bc;font-size:9px}.center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:22px;height:22px;opacity:.9}.center:before,.center:after{content:"";position:absolute;background:#e8f2ed;box-shadow:0 0 5px #c9ffe0}.center:before{width:2px;height:22px;left:10px}.center:after{height:2px;width:22px;top:10px}.bottom{position:absolute;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);left:12px;right:12px;display:flex;justify-content:space-between;align-items:end}.hint{font-size:10px;color:#c3d0d8;background:#071019b8;padding:7px 9px;border-radius:8px}.controls{display:flex;align-items:end;gap:10px;pointer-events:auto}.stick{width:124px;height:124px;border:1px solid #d8e4e866;background:#08131b88;border-radius:50%;position:relative;touch-action:none}.nub{width:43px;height:43px;border-radius:50%;position:absolute;left:40px;top:40px;background:#c6d7d4aa;border:1px solid #fff9;box-shadow:0 2px 12px #0008}.buttons{display:grid;grid-template-columns:64px 64px;gap:8px}.btn{height:54px;border-radius:12px;border:1px solid #d5e3e477;background:#0b1824cc;color:#fff;font-weight:800;font-size:11px;touch-action:none}.btn.fire{height:76px;background:#a13b32df;border-color:#ffc2a866}.btn:active{filter:brightness(1.4)}#message{position:fixed;left:50%;top:18%;transform:translateX(-50%);padding:9px 13px;background:#071019d9;border:1px solid #b6c8d344;border-radius:10px;font-size:12px;text-align:center;max-width:85%;pointer-events:none}#start{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(#08121bd9,#08121bf2);z-index:5;padding:22px}#start .card{max-width:420px;width:100%;background:#101d28;border:1px solid #b4c7d333;border-radius:18px;padding:24px;box-shadow:0 20px 80px #0009}h1{margin:0;font-size:27px;letter-spacing:.13em}#start p{color:#b6c4ce;font-size:13px;line-height:1.6}.startbtn{width:100%;padding:15px;border:0;border-radius:10px;background:#d2dfd9;color:#101820;font-weight:900;font-size:14px;margin-top:8px}.small{font-size:10px!important;color:#8093a0!important}.tag{display:inline-block;border:1px solid #9db4c044;border-radius:6px;padding:4px 7px;font-size:10px;color:#b9c9d2;margin:2px 3px 2px 0}
+@media(orientation:portrait){#start:after{content:'가로 화면으로 돌리면 더 편하게 플레이할 수 있어요.';position:absolute;bottom:22px;color:#b8c7d0;font-size:12px}}
+
+#mainMenu{position:fixed;inset:0;z-index:8;display:flex;align-items:center;justify-content:center;padding:20px;background:linear-gradient(110deg,#071019ed 0%,#101d28d9 52%,#071019ef 100%);overflow:auto}
+#mainMenu:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent 49.8%,#d7e0df12 50%,transparent 50.2%),linear-gradient(0deg,transparent 49.8%,#d7e0df0c 50%,transparent 50.2%);background-size:48px 48px;mask-image:linear-gradient(90deg,#000,transparent)}
+.menuCard{position:relative;width:min(540px,100%);padding:clamp(22px,5vw,42px);border:1px solid #c3d1d044;border-left:3px solid #b6c6bc;background:linear-gradient(145deg,#172631f2,#0a141df5);box-shadow:0 24px 90px #000b}
+.menuEyebrow{font-size:10px;letter-spacing:.34em;color:#a6b8b1;font-weight:800}
+.menuLogo{font-size:clamp(38px,9vw,64px);line-height:1;font-weight:1000;letter-spacing:.12em;margin:12px 0 8px;text-shadow:3px 3px 0 #52645d}
+.menuLine{height:2px;width:100%;background:linear-gradient(90deg,#c2d0c6,#c2d0c600);margin:20px 0}
+.menuDesc{font-size:12px;line-height:1.7;color:#b8c6cc;max-width:390px}
+.menuActions{display:grid;gap:10px;margin-top:24px}
+.menuAction{padding:15px 16px;text-align:left;border:1px solid #b9c9c344;background:#1b2b35;color:#fff;border-radius:5px;font-weight:900;letter-spacing:.08em;font-size:13px}
+.menuAction.primary{background:#c7d2ca;color:#111b20;border-color:#e6eee8}
+.menuAction:active{transform:translateY(1px);filter:brightness(1.12)}
+.menuAction small{display:block;font-size:10px;font-weight:500;letter-spacing:0;color:#aebdc3;margin-top:4px}
+.menuAction.primary small{color:#45534d}
+.menuFoot{display:flex;justify-content:space-between;gap:10px;margin-top:22px;color:#71848e;font-size:9px;letter-spacing:.12em}
+#onlineInfo{display:none;margin-top:12px;padding:12px;border:1px solid #c6a66a66;background:#b18a3517;color:#e4d2a7;font-size:11px;line-height:1.6}
+@media(orientation:portrait){.menuCard{margin:10px 0}}
+
+</style>
+</head>
+<body>
+<div id="game"></div>
+
+<div id="mainMenu">
+  <div class="menuCard">
+    <div class="menuEyebrow">TACTICAL COMBAT SIMULATION</div>
+    <div class="menuLogo">PROJECT<br>ZERO</div>
+    <div class="menuEyebrow">MODERN MILITARY // ONLINE FPS PROJECT</div>
+    <div class="menuLine"></div>
+    <p class="menuDesc">전장을 읽고, 팀과 협력하고, 목표를 달성하라.<br>PROJECT ZERO의 첫 번째 작전 구역에 오신 것을 환영합니다.</p>
+    <div class="menuActions">
+      <button class="menuAction primary" id="menuTraining">훈련장 입장 <small>3D 사격장 · 이동 및 조작 테스트</small></button>
+      <button class="menuAction" id="menuOnline">온라인 대전 <small>멀티플레이 로비 · 서버 연결 준비 중</small></button>
+      <button class="menuAction" id="menuControls">조작 안내 <small>모바일 터치 조작 확인</small></button>
+    </div>
+    <div id="onlineInfo">온라인 대전은 아직 서버가 연결되지 않았어. 현재는 실제 상대 플레이어가 접속하거나 방을 만드는 기능이 없어. 다음 개발 단계에서 별도 멀티플레이 서버를 연결할 예정이야.</div>
+    <div class="menuFoot"><span>BUILD 0.3 // VISUAL REWORK</span><span>IOS MOBILE EXPERIENCE</span></div>
+  </div>
+</div>
+
+<div id="hud"><div class="top"><div class="panel"><div class="brand">PROJECT ZERO</div><div class="sub">FIELD TRAINING // VISUAL REWORK 0.3</div></div><div class="stats"><div class="panel stat"><span>ELIMINATIONS</span><b id="kills">00</b></div><div class="panel stat"><span>ENERGY</span><b id="hp">100</b></div><div class="panel stat"><span>AMMO</span><b id="ammo">30 / 90</b></div></div></div><div class="center"></div><div id="message">훈련장에 오신 것을 환영합니다</div><div class="bottom"><div class="hint">왼쪽 스틱: 이동<br>화면 오른쪽 드래그: 시점</div><div class="controls"><div class="stick" id="stick"><div class="nub" id="nub"></div></div><div class="buttons"><button class="btn" id="reload">재장전</button><button class="btn" id="jump">점프</button><button class="btn fire" id="fire">발사</button><button class="btn" id="sprint">질주</button></div></div></div></div>
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+const root=document.querySelector('#game');
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x89999a);scene.fog=new THREE.Fog(0x89999a,48,145);
+const camera=new THREE.PerspectiveCamera(76,innerWidth/innerHeight,.1,220);camera.position.set(0,1.7,8);
+const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.12;root.appendChild(renderer.domElement);
+scene.add(new THREE.HemisphereLight(0xdce7e5,0x313a34,1.75));
+const sun=new THREE.DirectionalLight(0xffedcf,2.8);sun.position.set(-24,34,18);sun.castShadow=true;sun.shadow.mapSize.set(1536,1536);sun.shadow.camera.left=-55;sun.shadow.camera.right=55;sun.shadow.camera.top=55;sun.shadow.camera.bottom=-55;scene.add(sun);
+const fill=new THREE.DirectionalLight(0x9db8c4,.65);fill.position.set(25,12,-20);scene.add(fill);
+const mat=(c,r=.85,m=0)=>new THREE.MeshStandardMaterial({color:c,roughness:r,metalness:m});
+const groundMat=mat(0x626a60,.98);
+const ground=new THREE.Mesh(new THREE.PlaneGeometry(180,180),groundMat);ground.rotation.x=-Math.PI/2;ground.receiveShadow=true;scene.add(ground);
+const grid=new THREE.GridHelper(180,90,0x9ca58f,0x858e81);grid.position.y=.014;grid.material.transparent=true;grid.material.opacity=.09;scene.add(grid);
+// Distant low-poly hills frame the training compound.
+const hillMat=mat(0x59675e,1), hillMat2=mat(0x68766a,1);
+for(let i=0;i<13;i++){const h=5+(i%4)*2.2;const hill=new THREE.Mesh(new THREE.ConeGeometry(9+(i%3)*3,h,7),i%2?hillMat:hillMat2);hill.position.set(-72+i*12,h/2-1,-72-(i%3)*5);hill.receiveShadow=true;scene.add(hill)}
+function box(x,y,z,sx,sy,sz,color){const o=new THREE.Mesh(new THREE.BoxGeometry(sx,sy,sz),mat(color));o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;scene.add(o);return o}
+// Training compound: cover blocks, low buildings and perimeter walls.
+for(let i=-3;i<=3;i++){box(i*8,1.5,-24,6,3,1.2,0x6c7775);box(i*8,1.5,25,6,3,1.2,0x6c7775)}
+for(let i=0;i<8;i++){let x=(i%4)*13-19,z=Math.floor(i/4)*-18-2;box(x,1.1,z,4,2.2,4,i%2?0x59665f:0x737d78);box(x,2.25,z,4.15,.18,4.15,0x333f3d)}
+box(-27,3,-12,8,6,12,0x68736e);box(27,2,-15,10,4,15,0x59645f);
+box(0,2,-42,60,4,2,0x68736e);
+// Stacked shipping containers, loading frames and concrete cover.
+const containerColors=[0x455b58,0x59645d,0x4d5552,0x6b6252];
+for(let i=0;i<4;i++){
+ const x=-24+i*16;
+ box(x,1.25,-14,10,2.5,3.2,containerColors[i]);
+ for(let j=-4;j<=4;j++)box(x+j,1.25,-12.36,.055,2.25,.035,0x9aa39a);
+ box(x,2.53,-14,10.1,.08,3.3,0x303a37);
+}
+function cylinder(x,y,z,r,h,color){
+ const o=new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,12),mat(color,.8,.12));
+ o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;scene.add(o);return o;
+}
+for(const p of [[-17,.65,-4],[17,.65,-5],[-25,.65,-28],[25,.65,-28]]){
+ cylinder(p[0],p[1],p[2],.58,1.3,0x59645d);
+ cylinder(p[0],1.33,p[2],.61,.08,0x252d2b);
+}
+for(let i=0;i<7;i++){
+ const x=-27+i*9;
+ box(x,.65,9,2.1,1.3,1.8,0x626d66);
+ box(x,.08,9,2.2,.16,1.9,0x303a36);
+}
+
+// Decorative container stripes
+for(let x=-24;x<=24;x+=8){box(x,.03,-8,.12,.02,12,0xd4b86c)}
+// Targets are stylized training dummies, not realistic people.
+
+const targets=[];
+const armor=mat(0x59645e,.68,.22), armorDark=mat(0x273239,.72,.18);
+const visorMat=new THREE.MeshStandardMaterial({color:0x9db6b0,metalness:.55,roughness:.22,emissive:0x243b38});
+const accent=mat(0xc19b53,.62,.28), joint=mat(0x151e22,.8,.1);
+function makeTarget(x,z){
+ const g=new THREE.Group();
+ function part(geo,material,px,py,pz,sx=1,sy=1,sz=1){
+  const o=new THREE.Mesh(geo,material);o.position.set(px,py,pz);o.scale.set(sx,sy,sz);o.castShadow=true;o.receiveShadow=true;g.add(o);return o;
+ }
+ // Compact, clearly fictional armored training android silhouette.
+ part(new THREE.CapsuleGeometry(.34,.62,5,8),armor,0,1.25,0,1,.95,.72);
+ part(new THREE.BoxGeometry(.72,.25,.22),armorDark,0,1.55,0);
+ part(new THREE.SphereGeometry(.235,16,12),armorDark,0,1.94,0,1,1,.9);
+ part(new THREE.BoxGeometry(.31,.09,.045),visorMat,0,1.96,.205);
+ part(new THREE.BoxGeometry(.48,.12,.14),accent,0,1.22,.27);
+ // Shoulder guards and articulated arms.
+ for(const s of [-1,1]){
+  part(new THREE.SphereGeometry(.19,10,8),armor,s*.43,1.52,0,1,.8,.9);
+  part(new THREE.CapsuleGeometry(.095,.38,4,7),armorDark,s*.49,1.16,.015,1,1,1);
+  part(new THREE.SphereGeometry(.105,8,7),joint,s*.49,.92,.02);
+  part(new THREE.CapsuleGeometry(.12,.48,4,7),armorDark,s*.17,.48,0,1,1,1);
+  part(new THREE.BoxGeometry(.22,.12,.3),armor,s*.17,.18,.015);
+ }
+ // Chest plate, small ID panel and back pack.
+ part(new THREE.BoxGeometry(.42,.42,.16),armorDark,0,1.28,.23);
+ part(new THREE.BoxGeometry(.2,.055,.035),visorMat,0,1.32,.32);
+ part(new THREE.BoxGeometry(.34,.42,.2),armorDark,0,1.28,-.2);
+ g.position.set(x,0,z);scene.add(g);
+ targets.push({group:g,alive:true,respawn:0});
+}
+[[-12,-18],[-4,-29],[8,-21],[18,-33],[-20,-37],[22,-8]].forEach(p=>makeTarget(...p));
+// Simple first-person training device model.
+
+const tool=new THREE.Group();
+const toolMat=mat(0x273238,.42,.48), toolEdge=mat(0x87938b,.38,.55), rubber=mat(0x151c20,.92,.02);
+function toolPart(geo,material,pos,scale){
+ const o=new THREE.Mesh(geo,material);o.position.set(...pos);o.scale.set(...scale);o.castShadow=true;tool.add(o);return o;
+}
+toolPart(new THREE.BoxGeometry(.22,.2,.66),toolMat,[.34,-.28,-.62],[1,1,1]);
+toolPart(new THREE.BoxGeometry(.15,.28,.2),rubber,[.34,-.46,-.43],[1,1,1]);
+toolPart(new THREE.BoxGeometry(.12,.1,.25),toolEdge,[.34,-.16,-.68],[1,1,1]);
+toolPart(new THREE.CylinderGeometry(.055,.055,.42,12),toolMat,[.34,-.27,-.98],[1,1,1]);
+toolPart(new THREE.BoxGeometry(.1,.12,.13),toolEdge,[.34,-.13,-.59],[1,1,1]);
+toolPart(new THREE.BoxGeometry(.025,.08,.06),visorMat,[.34,-.105,-.59],[1,1,1]);
+camera.add(tool);scene.add(camera);
+let yaw=0,pitch=0,moveX=0,moveY=0,lookId=null,lookX=0,lookY=0,stickId=null,ammo=30,reserve=90,kills=0,hp=100,vy=0,onGround=true,isRunning=false,lastShot=0,reloading=false;
+const ray=new THREE.Raycaster();const forward=new THREE.Vector3();const right=new THREE.Vector3();const clock=new THREE.Clock();
+function updateHUD(){document.querySelector('#ammo').textContent=`${ammo} / ${reserve}`;document.querySelector('#kills').textContent=String(kills).padStart(2,'0');document.querySelector('#hp').textContent=hp}
+function say(t){const el=document.querySelector('#message');el.textContent=t;el.style.opacity=1;clearTimeout(say.timer);say.timer=setTimeout(()=>el.style.opacity=.0,1900)}
+function shoot(){const now=performance.now();if(reloading||now-lastShot<180)return;lastShot=now;if(ammo<=0){say('탄약이 없습니다. 재장전하세요.');return}ammo--;updateHUD();ray.setFromCamera(new THREE.Vector2(0,0),camera);const hits=ray.intersectObjects(targets.filter(t=>t.alive).map(t=>t.group),true);if(hits.length&&hits[0].distance<65){let obj=hits[0].object;while(obj.parent&&!targets.some(t=>t.group===obj))obj=obj.parent;const t=targets.find(t=>t.group===obj);if(t){t.alive=false;scene.remove(t.group);kills++;updateHUD();say('표적 명중!');setTimeout(()=>{t.group.position.x=(Math.random()-.5)*42;t.group.position.z=-12-Math.random()*32;scene.add(t.group);t.alive=true},2200)}}else say('빗나갔습니다');tool.position.z=.045;setTimeout(()=>tool.position.z=0,65)}
+function reload(){if(reloading||ammo===30||reserve<=0)return;reloading=true;say('재장전 중...');setTimeout(()=>{const n=Math.min(30-ammo,reserve);ammo+=n;reserve-=n;reloading=false;updateHUD();say('재장전 완료')},1150)}
+function jump(){if(onGround){vy=6.2;onGround=false}}
+function setLook(dx,dy){yaw-=dx*.004;pitch=Math.max(-1.2,Math.min(1.2,pitch-dy*.004));camera.rotation.set(pitch,yaw,0,'YXZ')}
+renderer.domElement.addEventListener('touchstart',e=>{for(const t of e.changedTouches){if(t.clientX>innerWidth*.34&&t.clientY<innerHeight-145&&lookId===null){lookId=t.identifier;lookX=t.clientX;lookY=t.clientY}}},{passive:false});
+renderer.domElement.addEventListener('touchmove',e=>{for(const t of e.changedTouches)if(t.identifier===lookId){setLook(t.clientX-lookX,t.clientY-lookY);lookX=t.clientX;lookY=t.clientY}},{passive:false});
+function endLook(e){for(const t of e.changedTouches)if(t.identifier===lookId)lookId=null}renderer.domElement.addEventListener('touchend',endLook);renderer.domElement.addEventListener('touchcancel',endLook);
+const stick=document.querySelector('#stick'),nub=document.querySelector('#nub');stick.addEventListener('touchstart',e=>{e.preventDefault();if(stickId===null){const t=e.changedTouches[0];stickId=t.identifier;moveStick(t)}},{passive:false});stick.addEventListener('touchmove',e=>{e.preventDefault();for(const t of e.changedTouches)if(t.identifier===stickId)moveStick(t)},{passive:false});function moveStick(t){const r=stick.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,dx=t.clientX-cx,dy=t.clientY-cy,len=Math.max(1,Math.hypot(dx,dy)),k=Math.min(1,43/len);nub.style.transform=`translate(${dx*k}px,${dy*k}px)`;moveX=dx*k/43;moveY=dy*k/43}function endStick(e){for(const t of e.changedTouches)if(t.identifier===stickId){stickId=null;moveX=moveY=0;nub.style.transform='translate(0,0)'}}stick.addEventListener('touchend',endStick);stick.addEventListener('touchcancel',endStick);
+document.querySelector('#fire').addEventListener('pointerdown',e=>{e.preventDefault();shoot()});document.querySelector('#reload').addEventListener('pointerdown',e=>{e.preventDefault();reload()});document.querySelector('#jump').addEventListener('pointerdown',e=>{e.preventDefault();jump()});const sprintBtn=document.querySelector('#sprint');sprintBtn.addEventListener('pointerdown',e=>{e.preventDefault();isRunning=true});['pointerup','pointercancel','pointerleave'].forEach(ev=>sprintBtn.addEventListener(ev,()=>isRunning=false));
+let keys={};addEventListener('keydown',e=>{keys[e.code]=true;if(e.code==='Space')jump();if(e.code==='KeyR')reload()});addEventListener('keyup',e=>keys[e.code]=false);renderer.domElement.addEventListener('click',()=>{if(innerWidth>700)renderer.domElement.requestPointerLock?.()});addEventListener('mousemove',e=>{if(document.pointerLockElement===renderer.domElement)setLook(e.movementX,e.movementY)});addEventListener('mousedown',e=>{if(e.button===0&&document.pointerLockElement===renderer.domElement)shoot()});
+function loop(){requestAnimationFrame(loop);const dt=Math.min(clock.getDelta(),.04);forward.set(-Math.sin(yaw),0,-Math.cos(yaw));right.set(Math.cos(yaw),0,-Math.sin(yaw));let mx=moveX+(keys.KeyD?1:0)-(keys.KeyA?1:0),my=-moveY+(keys.KeyW?1:0)-(keys.KeyS?1:0);const mag=Math.hypot(mx,my);if(mag>1){mx/=mag;my/=mag}const speed=isRunning||keys.ShiftLeft?8.2:5.2;camera.position.addScaledVector(right,mx*speed*dt);camera.position.addScaledVector(forward,my*speed*dt);camera.position.x=THREE.MathUtils.clamp(camera.position.x,-34,34);camera.position.z=THREE.MathUtils.clamp(camera.position.z,-48,34);vy-=17*dt;camera.position.y+=vy*dt;if(camera.position.y<1.7){camera.position.y=1.7;vy=0;onGround=true}tool.rotation.x=THREE.MathUtils.lerp(tool.rotation.x,moveY*.035,dt*8);renderer.render(scene,camera)}loop();
+addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,1.7))});
+updateHUD();
+
+document.querySelector('#menuTraining').addEventListener('click',()=>{
+ document.querySelector('#mainMenu').remove();
+ document.querySelector('#hud').style.display='block';
+ say('훈련 구역 진입 완료');
+ if(document.documentElement.requestFullscreen)document.documentElement.requestFullscreen().catch(()=>{});
+});
+document.querySelector('#menuOnline').addEventListener('click',()=>{const p=document.querySelector('#onlineInfo');p.style.display=p.style.display==='block'?'none':'block'});
+document.querySelector('#menuControls').addEventListener('click',()=>{say('왼쪽 스틱: 이동 · 오른쪽 화면 드래그: 시점 · 발사/점프/재장전 버튼 사용')});
+
+</script></body></html>
